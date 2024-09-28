@@ -6,10 +6,15 @@ function App() {
   const [url, setUrl] = useState('');
   const [imageSrc, setImageSrc] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const [withCredentials, setWithCredentials] = useState(false);
 
   const handleChange = (event) => {
     setUrl(event.target.value);
+  };
+
+  const handleToggleCredentials = () => {
+    setWithCredentials(!withCredentials); // Toggle the state
   };
 
   const handleSubmit = async () => {
@@ -17,7 +22,10 @@ function App() {
     setImageSrc('');
     setLoading(true); // Set loading to true
     try {
-      const response = await axios.get(url, { withCredentials: true, responseType: 'blob' });
+      const response = await axios.get(url, {
+        responseType: 'blob',
+        withCredentials: withCredentials, // Use the toggle state
+      });
       const imageUrl = URL.createObjectURL(response.data);
       setImageSrc(imageUrl);
     } catch (err) {
@@ -40,6 +48,16 @@ function App() {
         required
         className="url-input"
       />
+      <div className="toggle-container">
+        <label>
+          <input
+            type="checkbox"
+            checked={withCredentials}
+            onChange={handleToggleCredentials}
+          />
+          Use Credentials
+        </label>
+      </div>
       <button onClick={handleSubmit} className="confirm-button">Confirm</button>
 
       {loading && <p className="loading-message">Loading...</p>} {/* Loading indicator */}
